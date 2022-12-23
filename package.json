@@ -1,0 +1,27 @@
+{
+  "name": "auto-object-mapper",
+  "version": "0.0.1",
+  "description": "这是一个源对象到目标对象的映射工具，支持通过不同指令的组合方式，实现不同的映射效果。",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lr5420511/auto-object-mapper.git"
+  },
+  "keywords": [
+    "Object",
+    "Mapping",
+    "Directives"
+  ],
+  "author": "Alex liao",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lr5420511/auto-object-mapper/issues"
+  },
+  "homepage": "https://github.com/lr5420511/auto-object-mapper#readme",
+  "dependencies": {
+    "babel-polyfill": "^6.26.0"
+  }
+}
