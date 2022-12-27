@@ -230,3 +230,76 @@ const result = mapper.appear({ a: 1, c: 4 }, { b: 2, d: 3 });
 ```
 
 ### *基础指令* **`-`**
+这个`基础指令`主要去改变`查找路径`在`源对象`中查找到的`值`、在`目标对象`中查找到的`值`、在`目标对象`中查找到的`宿主对象`和在`宿主对象`中`目标对象值`所对应的`属性`。可以通过在`目标对象查找路径`中配置**transform**项，来完全改变默认的`对象映射行为`。
+```javascript
+const mapper = new ObjectMapper({
+    'a': [
+        'b-',
+        {
+            key: '-+',
+            transform: (sval, tval, prop, host, tar) =>
+                [Array(sval).fill(3), [1], '[status]', tar]
+        } 
+    ]
+});
+
+const result = mapper.appear({ a: 2 });
+// result是{ b: 2, '[status]': [1, 3, 3] }
+```
+
+### *组合基础指令* **`?->*+!`**
+通过组合搭配`基础指令`的方式，去`干涉并改变`默认的`对象映射行为`是让人愉悦的。
+```javascript
+const mapper = new ObjectMapper({
+    'a': [
+        'b',
+        {
+            key: 'c.d?-+!',
+            default: tval => Object.keys(tval).length ? 2 : 3,
+            transform: (sval, tval, prop, host) => [
+                Array(sval).fill(sval), 
+                Array.isArray(tval) ? tval : [],
+                prop,
+                host
+            ],
+            expand: (_, tval) => tval.length ? 
+                [true, Math.floor(tval.length / 2)] : [false]
+        }
+    ]
+});
+
+const destination = {};
+
+mapper.appear({}, destination);
+// destination是{ b: undefined, c: { d: [ 3, 3, 3 ] } }
+
+mapper.appear({ a: null }, destination);
+// destination是{ b: undefined, c: { d: [ 3, [2, 2], 3, 3 ] } }
+```
+
+## 未来的拓展
+可以通过在**ObjectMapper**上调用**install**函数，`安装`其他的`自定义指令`插件。
+
+### ***ObjectMapper.install(plugin)***
+- 参数`plugin`，`必需`，表示插件本身，它会接受`ObjectMapper`作为参数。
+- 返回值，`ObjectMapper`本身。
+```javascript
+function XXX_mapper(rt) {
+    rt.presets.directives['X'] = handler;
+};
+
+ObjectMapper.install(XXX_mapper);
+```
+
+### ***handler(sval, tval, prop, host, fields, src, tar, index, ops)***
+- 参数`sval`，表示当前指令`接收`到的`源对象值`。
+- 参数`tval`，表示当前指令`接收`到的`目标对象值`。
+- 参数`prop`，表示当前指令`接收`到的`目标对象值`，在`宿主对象`中对应的`属性`。
+- 参数`host`，表示当前指令`接收`到的`目标对象值`所在的`宿主对象`。
+- 参数`fields`，表示`目标对象查找路径`中的`单个配置选项`。
+- 参数`src`，表示参与映射的`源对象`。
+- 参数`tar`，表示参与映射的`目标对象`。
+- 参数`index`，表示当前执行的`指令`在`指令集合`中的`索引`。
+- 参数`ops`，表示当前需要执行的整个`指令集合`。
+- 返回值，必须返回一个`数组`*[sval, tval, prop, host]*。
+
