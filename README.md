@@ -114,6 +114,17 @@ const result = mapper.appear({ 'a': { 'b': 5 } }, { 'b': { 'c': 9 } });
 // result是{ b: { c: 9, e: { f: 5 } } }
 ```
 
+`目标对象`的映射目的地`查找路径`中，可以通过配置**ignore**选项来选择，当在`源对象`中`查找路径不存在`时，是否`跳过`当前的单次映射。就像这样：
+```javascript
+const mapper = new ObjectMapper({  
+    'a.b': 'c',
+    'a.b.c.d': [{ key: 'd.e.g', ignore: true }, 'e']
+});
+
+const result = mapper.appear({ a: { b: 7 } });
+// result是{ c: 7, e: undefined }
+```
+
 ## 对象映射
 由于**ObjectMapper**类型提供了一个 **.appear**的`原型方法`，该类型的对象可以直接通过调用 **.appear**的方式进行`源对象`到`目标对象`的映射。值得一提的是，对象映射的状态接收方`目标对象`，它既可以是一个初始`无状态`的对象，同时也可以是一个初始`带有状态`的对象。
 
@@ -247,7 +258,32 @@ const result = mapper.appear({ a: 2 });
 // result是{ b: 2, '[status]': [1, 3, 3] }
 ```
 
-### *组合基础指令* **`?->*+!`**
+### *基础指令* **`#`**
+这个`基础指令`主要去改变`查找路径`在`源对象`中查找到的`值`。如果当前指令接收到的`源对象值`是**Array**类型的对象，则指令会在`源对象值`的基础上进行`数组查找`，否则`跳过`本次指令处理过程。可以通过在`目标对象查找路径`中配置**search**项来指定`数组查找`的方式。
+```javascript
+const mapper = new ObjectMapper({
+    'a': { key: 'b#', search: 'baz.bas' },
+    'b': [
+        'c#',
+        {
+            key: 'd#', search: (sval, src) => 'baz.bas[1]'
+        }
+    ]
+});
+
+const result = mapper.appear({ 
+    a: 2, 
+    b: [
+        { baz: { bas: [[0, 4]] } }, 
+        { baz: 0 },
+        { baz: { bas: { '1': 9 } } },
+        { baz: { bas: [[5, 6]] } }
+    ] 
+});
+// result是{ b: 2, c: [{ baz: { bas: [[0, 4]] } }, { baz: 0 }, { baz: { bas: { '1': 9 } } }, { baz: { bas: [[5, 6]] } }], d: [ 4, 9, 6 ] }
+```
+
+### *组合基础指令* **`?->*+#!`**
 通过组合搭配`基础指令`的方式，去`干涉并改变`默认的`对象映射行为`是让人愉悦的。
 ```javascript
 const mapper = new ObjectMapper({

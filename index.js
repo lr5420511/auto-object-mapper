@@ -30,6 +30,7 @@ const force_mapper = require('./extends/force-mapper');
 const increment_mapper = require('./extends/increment-mapper');
 const merge_mapper = require('./extends/merge-mapper');
 const transform_mapper = require('./extends/transform-mapper');
+const search_mapper = require('./extends/search-mapper');
 
 module.exports = [
     default_mapper,
@@ -37,5 +38,6 @@ module.exports = [
     force_mapper,
     increment_mapper,
     merge_mapper,
-    transform_mapper
+    transform_mapper,
+    search_mapper
 ].reduce((mapper, generator) => mapper.install(generator()), ObjectMapper);
