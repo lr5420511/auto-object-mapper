@@ -1,6 +1,6 @@
 {
   "name": "auto-object-mapper",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "这是一个源对象到目标对象的映射工具，支持通过不同指令的组合方式，实现不同的映射效果。",
   "main": "index.js",
   "scripts": {
