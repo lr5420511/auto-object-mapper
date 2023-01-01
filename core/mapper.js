@@ -32,8 +32,10 @@ Mapper.prototype = {
             this.template, this.pathname, this.switchname, presets.directives
         ];
         return Object.keys(template).reduce((res, srcPath) => {
-            const [to, srcThree] = [template[srcPath], discovery(source, srcPath)],
-                [srcValue, srcProp, srcHost] = srcThree;
+            const [to, srcValue, srcProp, srcHost] = [
+                template[srcPath], 
+                ...discovery(source, srcPath)
+            ];
             return to.reduce((res, fields) => {
                 const invalid = fields[switchname] && 'undefined' === typeof srcValue &&
                     !(srcHost && srcHost.hasOwnProperty(srcProp));
