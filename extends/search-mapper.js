@@ -13,7 +13,7 @@ module.exports = options => {
                 action = ('function' === typeof action ? action(sval, src) : action) || '';
                 sval = (action.match(/[^\.\[\]]+/g) || []).reduce((res, prop) =>
                     res.reduce((res, cur) => {
-                        const valid = cur && cur.hasOwnProperty(prop);
+                        const valid = cur && (cur.hasOwnProperty(prop) || cur[prop]);
                         if(valid) {
                             cur = cur[prop];
                             res.push(...(Array.isArray(cur) ? cur : [cur]));
